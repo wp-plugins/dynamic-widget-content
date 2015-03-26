@@ -18,21 +18,34 @@ class DWC_Widget extends WP_Widget {
         if( !is_singular() ) return;
 
         $post_id = get_the_ID();
+
+        // Check post type
+        $post_type = get_post_type( $post_id );
+        $post_types = DynamicWidgetContent::option( 'meta_box_post_types', array( 'post', 'page' ) );
+
+        if( !in_array( $post_type, $post_types ) ) return;
+
+        // Get data
         $title = get_post_meta( $post_id, 'dwc-title', true );
         $content = get_post_meta( $post_id, 'dwc-content', true );
 
         if( $title == '' && $content == '') return;
 
+        // Create output
         $title = apply_filters( 'widget_title', $title );
 
-        echo $args['before_widget'];
+        $output = $args['before_widget'];
         if ( !empty( $title ) ) {
-            echo $args['before_title'] . $title . $args['after_title'];
+            $output .= $args['before_title'] . $title . $args['after_title'];
         }
 
-        echo do_shortcode( wpautop( $content ) );
+        $output .= do_shortcode( wpautop( $content ) );
+        $output .= $args['after_widget'];
 
-        echo $args['after_widget'];
+        $output = apply_filters( 'dwc_widget_output', $output, $post_id );
+
+        // Echo output
+        echo $output;
     }
 
     public function form( $instance )

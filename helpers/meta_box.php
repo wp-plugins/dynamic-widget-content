@@ -12,17 +12,19 @@ class DWC_Meta_Box {
 
     public function add_meta_box()
     {
-        $post_types = apply_filters( 'dwc_post_types', array( 'post', 'page' ) );
+        if( current_user_can( DynamicWidgetContent::option( 'meta_box_capability', 'edit_posts' ) ) ) {
+            $post_types = DynamicWidgetContent::option( 'meta_box_post_types', array( 'post', 'page' ) );
 
-        foreach( $post_types as $post_type ) {
-            add_meta_box(
-                'dwc_meta_box',
-                'Dynamic Widget Content',
-                array( $this, 'meta_box_content' ),
-                $post_type,
-                'normal',
-                'default'
-            );
+            foreach( $post_types as $post_type ) {
+                add_meta_box(
+                    'dwc_meta_box',
+                    'Dynamic Widget Content',
+                    array( $this, 'meta_box_content' ),
+                    $post_type,
+                    'normal',
+                    'default'
+                );
+            }
         }
     }
 

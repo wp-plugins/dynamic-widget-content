@@ -3,13 +3,13 @@
 Plugin Name: Dynamic Widget Content
 Plugin URI: 
 Description: Dynamic widget content for single pages and posts
-Version: 1.0.0
+Version: 1.0.1
 Author: Bootstrapped Ventures
 Author URI: http://bootstrapped.ventures
 License: GPLv2
 */
 
-define( 'DWC_VERSION', '1.0.0' );
+define( 'DWC_VERSION', '1.0.1' );
 
 class DynamicWidgetContent {
 
@@ -40,6 +40,16 @@ class DynamicWidgetContent {
         return self::$instantiated_by_premium;
     }
 
+    /**
+     * Access a VafPress option with optional default value
+     */
+    public static function option( $name, $default = null )
+    {
+        $option = vp_option( 'dwc_option.' . $name );
+
+        return is_null( $option ) ? $default : $option;
+    }
+
     public $pluginName = 'dynamic-widget-content';
     public $coreDir;
     public $coreUrl;
@@ -54,6 +64,7 @@ class DynamicWidgetContent {
     public function init()
     {
         // Load external libraries
+        require_once( 'vendor/vafpress/bootstrap.php' );
 
         // Update plugin version
         update_option( $this->pluginName . '_version', DWC_VERSION );
@@ -75,12 +86,11 @@ class DynamicWidgetContent {
         // Add core helper directory
         $this->add_helper_directory( $this->coreDir . '/helpers' );
 
-        // Migrate first if needed
-        $this->helper( 'meta_box' );
-        $this->helper( 'widget' );
-
         // Load required helpers
         $this->helper( 'activate' );
+        $this->helper( 'meta_box' );
+        $this->helper( 'vafpress' );
+        $this->helper( 'widget' );
     }
 
     /**
